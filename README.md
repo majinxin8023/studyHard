@@ -1,2 +1,4 @@
 # Javascript    
-- bind的实现
+- bind
+- 深克隆(deepClone)
+- promise
