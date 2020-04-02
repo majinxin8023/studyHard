@@ -35,7 +35,7 @@ Function.prototype.bind = function(onThis) {
 this.age = 20
 function test(data, data2) {
     this.age = 30
-    console.log(this.yideng)
+    console.log(this.age)
     console.log('data', data)
     console.log(data2, 'data2')
 }

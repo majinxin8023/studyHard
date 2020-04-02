@@ -9,6 +9,10 @@
  * 7.考虑promise有n种实现，要兼容别人的promise
  * 8.有可能resolve方法又是一个promise, 拿promise的值,递归调用
  * 9.值穿透的问题
+ * 10.finally 无论如何都执行，如果返回的是一个promise需要等待promise执行完，在继续执行
+ * 11.如何终止promise链？ 返回一个等待状态的promise
+ * 12.promise.all的实现，使用计数器
+ * 13.promise.race实现，取最快的结果
  */
 
 const PEDDING = 'pedding'
@@ -55,6 +59,9 @@ class Promise {
         this.onFulfilledCallback = []
         this.onRejectedCallback = []
         let resolve = (value) => { // 成功
+            if (value instanceof Promise) {
+                value.then(resolve, reject)
+            }
             if (this.status === PEDDING) {
                 this.value = value
                 this.status = SUCCESS
@@ -125,8 +132,65 @@ class Promise {
         })
         return newPromise
     }
+    catch(errCallBack) { // 用来捕获错误
+        return this.then(null, errCallBack)
+    }
 }
-
+Promise.resolve = function(value) {
+    return new Promise((resolve, reject) => {
+        resolve(value)
+    })
+}
+// finally
+Promise.prototype.finally = function(callback) {
+    return this.then((data) => {
+        // 如果callback是一个函数返回promise就等待这个promise执行完毕
+        // callback执行完毕才会执行resolve方法
+        return Promise.resolve(callback()).then(() => data)
+    }, (err) => {
+        return Promise.resolve(callback()).then(() => { throw err })
+    })
+}
+function isPromise(value) {
+    if (typeof value === 'function' || (typeof value === 'object' && value != null )) {
+        if (typeof value.then === 'funciton') {
+            return true
+        }
+    }
+    return false
+}
+// arr[3] = 3  arr.length = 4 所以采用计时器
+Promise.all = function(values) {
+    return new Promsie((resolve, reject) => {
+        let arr = []
+        let num = 0
+        let processData = (key, data) => {
+            arr[key] = data
+            if (++num === arr.length) resolve(arr)
+        }
+        for (let i = 0, l = values.length; i < l; i++) {
+            let current = values[i]
+            if (isPromise(current)) {
+                current.then((data) => { processData(i, data) }, reject)      
+            } else {
+                processData(i, current)
+            }
+        }
+    })
+}
+// race取最快的结果
+Promise.race = function (values) {
+    return new Promsie((resolve, reject) => {
+        for (let i = 0, l = values.length; i < l; i++) {
+            let current = values[i]
+            if (isPromise(current)) {
+                current.then(resolve, reject)      
+            } else {
+                resolve(current)
+            }
+        }
+    })
+}
 // function read() {
 //     return new Promise((resolve, reject) => {
 //         resolve(3)
