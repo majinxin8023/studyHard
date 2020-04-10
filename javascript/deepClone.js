@@ -30,3 +30,43 @@ function deepClone(source) {
 var obj = ['1', 2, 'c', ['sds', 'vv'], [{a: '1', b: '2'}]]
 let cloneObj = deepClone(obj)
 console.log(obj == cloneObj)
+/**
+ * 实现深克隆
+ * 1.采用ES6实现各种存在的情况，还可以进行添加
+ */
+let obj = {
+    bigInt: BigInt(12312),
+    set:new Set([2]),
+    map:new Map([['a',22],['b',33]]),
+    num: 0,
+    str: '',
+    boolean: true,
+    unf: undefined,
+    nul: null,
+    obj: {
+         name: '我是一个对象',
+         id: 1
+    },
+     arr: [0, 1, 2],
+     func: function () {
+       console.log('我是一个函数')
+     },
+ 
+     date: new Date(0),
+     reg: new RegExp('/我是一个正则/ig'),
+     [Symbol('1')]: 1,
+ };
+ Object.defineProperty(obj, 'innumerable', {
+   enumerable: false,
+    value: '不可枚举属性'
+ });
+ obj = Object.create(obj, Object.getOwnPropertyDescriptors(obj))
+ obj.loop = obj
+ let cloneObj = deepClone(obj);
+ console.log('obj', obj);
+ console.log('cloneObj', cloneObj);
+ for (let key of Object.keys(cloneObj)) {
+     if (typeof cloneObj[key] === 'object' || typeof cloneObj[key] === 'function') {
+         console.log(`${key}相同吗？ `, cloneObj[key] === obj[key])
+    }
+ }
