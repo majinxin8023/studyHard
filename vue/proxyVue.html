@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>proxyVue简单实现</title>
+</head>
+<style>
+    #app{
+        margin: 100px auto 0 auto;
+        width: 300px;
+    }
+    #btn{
+        margin: 10px auto;
+    }
+    input {
+        outline: none;
+        border: 1px solid red;
+    }
+</style>
+<body>
+    <div id="app">
+        <input type="text" v-model="num">
+        <button id="btn" v-click="addList">添加至todoList</button><br/>
+        <span>您输入的内容是：</span><span v-bind="num"></span>
+        <ul id="box"></ul>
+    </div>
+</body>
+</html>
+<script>
+    class PorxyVue {
+        constructor(options) {
+            this.$options = options || {}
+            this.$methods = this._methods = this.$options.methods
+            const data = (this._data = this.$options.data)
+            this.subscribe = {}
+            this.observer(data)
+            this.compile(options.el)
+        }
+        // 对数据进行proxy
+        observer(data) {
+            const that = this
+            let handler = {
+                get(target, property) {
+                    return target[property]
+                },
+                set(target, property, value) {
+                    console.log(target, property, value)
+                    let res = Reflect.set(target, property, value)
+                    that.subscribe[property].map(item => {
+                        item.update()
+                    })
+                    return res
+                }
+            }
+            this.$data = new Proxy(data, handler)
+        }
+        // 收集每一个watcher
+        publish(watcher) {
+            if (!this.subscribe[watcher.property]) { // 不存在为数组
+                this.subscribe[watcher.property] = []
+            }
+            this.subscribe[watcher.property].push(watcher)
+        }
+        // 初始化编译dom
+        compile(dom) {
+            const nodes = Array.prototype.slice.call(document.querySelector(dom).children)
+            let data = this.$data
+            nodes.map(node => {
+                if (node.children.length > 0 ) this._compile(node) // 再扩展更深层次的dmo
+                if (node.hasAttribute('v-bind')) {
+                    let property = node.getAttribute('v-bind')
+                    this.publish(new Watcher(node, 'innerHTML', data, property))
+                }
+                if (node.hasAttribute('v-model')) {
+                    let property = node.getAttribute('v-model')
+                    this.publish(new Watcher(node, 'value', data, property))
+                    node.addEventListener('input', () => {
+                        data[property] = node.value
+                    })
+                }
+                if (node.hasAttribute('v-click')) {
+                    let methodName = node.getAttribute('v-click')
+                    let method = this.$methods[methodName].bind(data)
+                    node.addEventListener('click', method)
+                }
+            })
+        }
+    }
+    // 监听者
+    class Watcher {
+        constructor(node, attr, data, property) {
+            this.node = node
+            this.attr = attr
+            this.data = data
+            this.property = property
+        }
+        update() {
+            this.node[this.attr] = this.data[this.property]
+        }
+    }
+    // 渲染列表
+    const Render = {
+        init: function() { // 初始的渲染
+            const fragment = document.createDocumentFragment() // 文档碎片
+            for (let i = 0, l = arr.length; i < l; i++) {
+                const li = document.createElement('li');
+                li.textContent = arr[i]
+                fragment.appendChild(li)
+            }
+            box.appendChild(fragment)
+        },
+        addList: function(value) { // todilist
+            const li = document.createElement('li')
+            li.textContent = value
+            box.appendChild(li)
+        }
+    } 
+    window.onload = function () {
+        let vm = new PorxyVue({
+            el: '#app',
+            data: {
+                num: 0,
+                arr: [],
+            },
+            methods: {
+                addList() {
+                    this.arr.push(this.num)
+                    Render.addList(this.num)
+                }
+            }
+        })
+    }
+</script>
