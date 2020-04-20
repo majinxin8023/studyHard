@@ -4,3 +4,5 @@
 - promise
 # Vue    
 - 简单版本的proxy 双向数据绑定以及todoList
+- # React    
+- mobx(autorun, observable)
