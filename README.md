@@ -9,3 +9,4 @@
 - VueRouter(router-link,router-view)
 # React    
 - mobx(autorun, observable)
+- dom-diff(实现简单版本，可继续扩展更多内容)
