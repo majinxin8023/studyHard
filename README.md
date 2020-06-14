@@ -1,7 +1,7 @@
 # Javascript    
 - bind
 - 深克隆(deepClone)
-- promise
+- promise(finally、all、race)
 - debounce(防抖--- loadsh库)
 - throttle(节流--- loadsh库)
 # Vue    
@@ -10,3 +10,5 @@
 # React    
 - mobx(autorun, observable)
 - dom-diff(实现简单版本，可继续扩展更多内容)
+# Webpack
+- tapable(同步方法)
