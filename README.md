@@ -4,6 +4,8 @@
 - promise(finally、all、race)
 - debounce(防抖--- loadsh库)
 - throttle(节流--- loadsh库)
+# LeetCode
+- 两数之和
 # Vue    
 - 简单版本的proxy 双向数据绑定以及todoList
 - VueRouter(router-link,router-view)
