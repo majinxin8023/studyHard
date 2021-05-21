@@ -1,5 +1,8 @@
 # CSS
 - 九宫格实现
+# Algorithm 算法理论
+- 栈、队列
+- 链表
 # Javascript    
 - bind
 - 深克隆(deepClone)
@@ -15,4 +18,4 @@
 - mobx(autorun, observable)
 - dom-diff(实现简单版本，可继续扩展更多内容)
 # Webpack
-- tapable(同步方法) 
+- tapable(同步方法)
