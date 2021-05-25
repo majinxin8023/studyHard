@@ -3,6 +3,8 @@
 # Algorithm 算法理论
 - 栈、队列
 - 链表
+- 双向链表
+- 集合
 # Javascript    
 - bind
 - 深克隆(deepClone)
