@@ -5,7 +5,9 @@
 - 链表
 - 双向链表
 - 集合
-# Javascript    
+- 哈希表
+# Javascript
+- base
 - bind
 - 深克隆(deepClone)
 - promise(finally、all、race)
